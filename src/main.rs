@@ -13,7 +13,7 @@ use uuid::Uuid;
 
 mod actions;
 mod models;
-mod schema;
+mod diesel_custom;
 
 type DbPool = r2d2::Pool<ConnectionManager<MysqlConnection>>;
 
