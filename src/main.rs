@@ -7,13 +7,15 @@
 extern crate diesel;
 
 use actix_web::{get, middleware, post, web, App, Error, HttpResponse, HttpServer};
-use diesel::prelude::*;
+// use diesel::prelude::*;
+use diesel::mysql::MysqlConnection;
 use diesel::r2d2::{self, ConnectionManager};
 use uuid::Uuid;
 
-mod actions;
 mod models;
-mod diesel_custom;
+mod actions;
+
+use models::models::{NewUser};
 
 type DbPool = r2d2::Pool<ConnectionManager<MysqlConnection>>;
 
@@ -47,12 +49,11 @@ async fn get_user(
 #[post("/user")]
 async fn add_user(
     pool: web::Data<DbPool>,
-    form: web::Json<models::NewUser>
+    form: web::Json<NewUser>
 ) -> Result<HttpResponse, Error> {
     println!("In post");
 
     let conn = pool.get().expect("couldn't get db connection from pool");
-
 
    // use web::block to offload blocking Diesel code without blocking server thread
     let user = web::block(move || actions::insert_new_user(&form.name, &conn))
@@ -67,9 +68,9 @@ async fn add_user(
 
 #[actix_rt::main]
 async fn main() -> std::io::Result<()> {
-
     std::env::set_var("RUST_BACKTRACE", "1");
     std::env::set_var("RUST_LOG", "my_errors=debug,actix_web=info,diesel=debug");
+
     env_logger::init();
     dotenv::dotenv().ok();
 

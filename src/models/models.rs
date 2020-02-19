@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 
-use crate::diesel_custom::schema::users;
+use crate::models::schema::users;
 
 #[derive(Debug, Clone, Serialize, Queryable, Insertable)]
 pub struct User {
